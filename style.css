@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.buttons {
+    display: flex;
+    flex: 1;
+}
+
+#zero {
+    flex: 2;
+}
