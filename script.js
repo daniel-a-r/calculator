@@ -1,63 +1,165 @@
-const KEY_CODES = {
-    48: 0,
-    49: 1,
-    50: 2,
-    51: 3,
-    52: 4,
-    53: 5,
-    54: 6,
-    55: 7,
-    56: 8,
-    57: 9,
-    96: 0,
-    97: 1,
-    98: 2,
-    99: 3,
-    100: 4,
-    101: 5,
-    102: 6,
-    103: 7,
-    104: 8,
-    105: 9,
-    110: '.',
-    190: '.',
-    191: '/',
-    173: '-',
-    61: '=',
-    111: '/',
-    106: '*',
-    109: '-',
-    107: '+',
-    13: '=',
-    8: 'del'
-}
-
-const KEY_SHIFT_CODES = {
-    56: '*',
-    61: '+',
-}
-
 const BUTTON_CODES = {
     0: 'ac',
     1: 'sign',
 }
 
+const KEYS = new Set(['0',
+                      '1',
+                      '2',
+                      '3',
+                      '4',
+                      '5',
+                      '6',
+                      '7',
+                      '8',
+                      '9',
+                      '.',
+                      '/',
+                      '*',
+                      '-',
+                      '+',
+                      '=',
+                      'Enter',
+                      'Backspace'])
+
+const NUMBER_KEYS = new Set(['0',
+                             '1',
+                             '2',
+                             '3',
+                             '4',
+                             '5',
+                             '6',
+                             '7',
+                             '8',
+                             '9',
+                             '.',
+                             'Backspace'])
+
+const OP_KEYS = new Set(['/',
+                         '*',
+                         '-',
+                         '+',
+                         '=',
+                         'Enter',])
+
+const calculator = {
+    operandA: null,
+    operandB: null,
+    operator: null,
+    hasDecimal: false,
+    operandATyping: true,
+    operandBTyping: false,
+    startedTyping: false,
+    setOperandA(num) {
+        this.operandA = num;
+    },
+    setOperandB(num) {
+        this.operandB = num;
+    },
+    setOperator(op) {
+        this.operator = op;
+    },
+    reset() {
+        this.operandB = null;
+        this.operator = null;
+        this.hasDecimal = false;
+        this.startedTyping = false;
+    },
+    divide() {
+        this.operandA = this.operandA / this.operandB;
+        return this.operandA;
+    },
+    multiply() {
+        this.operandA = this.operandA * this.operandB;
+        return this.operandA;
+    },
+    subtract() {
+        this.operandA = this.operandA - this.operandB;
+        return this.operandA;
+    },
+    add() {
+        this.operandA = this.operandA + this.operandB;
+        return this.operandA;
+    },
+    calculate() {
+        if (!(this.operator === null && this.operandB === null)) {
+            switch (this.operator) {
+                case '/':
+                    return this.divide();
+                case '*':
+                    return this.multiply();
+                case '-':
+                    return this.subtract();
+                case '+':
+                    return this.add();
+            }
+            this.reset();
+        }
+    }
+}
+
+const para = document.querySelector('p');
+console.log(para.textContent);
+
 const body = document.querySelector('body');
-body.addEventListener('keydown', (event) => {
-    if (event.shiftKey) {
-        console.log(event);
-    } else {
-        console.log(event);
+body.addEventListener('keydown', event => {
+    const key = event.key
+    const text = para.textContent;
+    if (NUMBER_KEYS.has(key)) {
+        if (!calculator.startedTyping && 
+            calculator.operandB === null && 
+            calculator.operator !== null) {
+            if (key !== 'Backspace') {
+                if (key === '.') {
+                    para.textContent = '0.';
+                } else {
+                    para.textContent = key;
+                }
+                calculator.startedTyping = true;
+            }
+        } else if (key === 'Backspace') {
+            if (text.length === 1) {
+                if (text !== '0') {
+                    para.textContent = '0';
+                }
+            } else {
+                para.textContent = text.slice(0, -1);
+            }
+        } else if (key === '.') {
+            if (!calculator.hasDecimal) {
+                calculator.hasDecimal = true;
+                para.textContent = text + key;
+            }
+        } else {
+            if (text === '0') {
+                para.textContent = key;
+            } else {
+                para.textContent = text + key;
+            }
+        }
+    }
+    if (OP_KEYS.has(key)) {
+        switch (key) {
+            case '/':
+            case '*':
+            case '-':
+            case '+':
+                calculator.setOperandA(Number(para.textContent));
+                calculator.setOperator(key);
+                break;
+            case '=':
+            case 'Enter':
+                calculator.setOperandB(Number(para.textContent))
+                para.textContent = calculator.calculate();
+                break;
+        }
     }
 });
 
 const buttons = document.querySelectorAll('button');
-buttons.forEach((button, key) => {
+buttons.forEach(button => {
     console.log(button);
     button.addEventListener('click', () => {
         console.log(button);
     })
 })
-
-// const equal = document.querySelector('#equals');
-// console.log(equal.dataset);
