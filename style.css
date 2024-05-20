@@ -22,13 +22,14 @@ body {
     box-sizing: content-box;
     margin-bottom: .5rem;
     padding: 0 6px;
-    height: 5rem;
+    padding-bottom: 2px;
+    height: 4.75rem;
     border: .1rem solid black;
     border-radius: 4px;
     background-color: lightgray;
     display: flex;
     justify-content: end;
-    align-items: center;
+    align-items: end;
 }
 
 p {
