@@ -46,7 +46,6 @@ const calculator = {
     operandA: null,
     operandB: null,
     operator: null,
-    hasDecimal: false,
     operandATyping: true,
     operandBTyping: false,
     startedTyping: false,
@@ -98,6 +97,11 @@ const calculator = {
     }
 }
 
+const display = {
+    hasDecimal: false,
+    numberCount: 1,
+}
+
 const para = document.querySelector('p');
 console.log(para.textContent);
 
@@ -123,17 +127,19 @@ body.addEventListener('keydown', event => {
                     para.textContent = '0';
                 }
             } else {
+                display.numberCount--;
                 para.textContent = text.slice(0, -1);
             }
         } else if (key === '.') {
-            if (!calculator.hasDecimal) {
-                calculator.hasDecimal = true;
+            if (!display.hasDecimal) {
+                display.hasDecimal = true;
                 para.textContent = text + key;
             }
-        } else {
+        } else if (display.numberCount < 9) {
             if (text === '0') {
                 para.textContent = key;
             } else {
+                display.numberCount++;
                 para.textContent = text + key;
             }
         }
@@ -161,5 +167,5 @@ buttons.forEach(button => {
     console.log(button);
     button.addEventListener('click', () => {
         console.log(button);
-    })
+    });
 })
