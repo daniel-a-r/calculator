@@ -37,6 +37,11 @@ const KEY_SHIFT_CODES = {
     61: '+',
 }
 
+const BUTTON_CODES = {
+    0: 'ac',
+    1: 'sign',
+}
+
 const body = document.querySelector('body');
 body.addEventListener('keydown', (event) => {
     if (event.shiftKey) {
