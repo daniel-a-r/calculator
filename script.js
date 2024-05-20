@@ -46,9 +46,6 @@ const calculator = {
     operandA: null,
     operandB: null,
     operator: null,
-    operandATyping: true,
-    operandBTyping: false,
-    startedTyping: false,
     setOperandA(num) {
         this.operandA = num;
     },
@@ -58,11 +55,15 @@ const calculator = {
     setOperator(op) {
         this.operator = op;
     },
+    nullOperator() {
+        this.operator = null;
+    },
+    nullOperandB() {
+        this.operandB = null;
+    },
     reset() {
         this.operandB = null;
         this.operator = null;
-        this.hasDecimal = false;
-        this.startedTyping = false;
     },
     divide() {
         this.operandA = this.operandA / this.operandB;
@@ -82,17 +83,19 @@ const calculator = {
     },
     calculate() {
         if (!(this.operator === null && this.operandB === null)) {
+            let result;
             switch (this.operator) {
                 case '/':
-                    return this.divide();
+                    result = this.divide();
                 case '*':
-                    return this.multiply();
+                    result = this.multiply();
                 case '-':
-                    return this.subtract();
+                    result = this.subtract();
                 case '+':
-                    return this.add();
+                    result = this.add();
             }
-            this.reset();
+            this.nullOperandB();
+            return result;
         }
     }
 }
@@ -100,6 +103,19 @@ const calculator = {
 const display = {
     hasDecimal: false,
     numberCount: 1,
+    startedTyping: false,
+    calculated: false,
+    reset() {
+        this.hasDecimal = false;
+        this.numberCount = 1;
+    },
+    format(numberString) {
+        if (!numberString.includes('.')) {
+            if (this.numberCount % 3 === 1) {
+                return numberString[0] + ',' + numberString.slice(1);
+            }
+        }
+    },
 }
 
 const para = document.querySelector('p');
@@ -110,17 +126,19 @@ body.addEventListener('keydown', event => {
     const key = event.key
     const text = para.textContent;
     if (NUMBER_KEYS.has(key)) {
-        if (!calculator.startedTyping && 
-            calculator.operandB === null && 
-            calculator.operator !== null) {
+        if (!display.startedTyping && 
+            calculator.operator !== null || 
+            display.calculated) {
             if (key !== 'Backspace') {
                 if (key === '.') {
                     para.textContent = '0.';
                 } else {
                     para.textContent = key;
                 }
-                calculator.startedTyping = true;
+                display.numberCount = 1;
+                display.startedTyping = true;
             }
+            display.calculated = false;
         } else if (key === 'Backspace') {
             if (text.length === 1) {
                 if (text !== '0') {
@@ -145,18 +163,38 @@ body.addEventListener('keydown', event => {
         }
     }
     if (OP_KEYS.has(key)) {
+        // if (key === '/' || 
+        //     key === '*' || 
+        //     key === '-' || 
+        //     key === '+') {
+                
+        // } else {
+
+        // }
         switch (key) {
             case '/':
             case '*':
             case '-':
             case '+':
-                calculator.setOperandA(Number(para.textContent));
-                calculator.setOperator(key);
+                if (calculator.operator === null) {
+                    calculator.setOperandA(Number(para.textContent));
+                    calculator.setOperator(key);
+                } else if (calculator.operator !== null && !display.startedTyping) {
+                    calculator.setOperator(key);
+                } else {
+                    calculator.setOperandB(Number(para.textContent));
+                    para.textContent = calculator.calculate();
+                    calculator.setOperator(key);
+                    display.startedTyping = false;
+                }
                 break;
             case '=':
             case 'Enter':
                 calculator.setOperandB(Number(para.textContent))
                 para.textContent = calculator.calculate();
+                calculator.nullOperator();
+                display.startedTyping = false;
+                display.calculated = true;
                 break;
         }
     }
