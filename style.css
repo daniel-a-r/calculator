@@ -6,11 +6,72 @@ body {
     margin: 0;
 }
 
-.buttons {
+.container {
+    box-sizing: border-box;
+    max-width: 350px;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: .5rem;
+    background-color: rgb(64, 64, 64);
+}
+
+.output {
+    box-sizing: content-box;
+    margin-bottom: .5rem;
+    padding: 0 6px;
+    height: 5rem;
+    border: .1rem solid black;
+    border-radius: 4px;
+    background-color: lightgray;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+p {
+    font-size: 3.5rem;
+    margin: 0;
+}
+
+.buttons-container {
     display: flex;
     flex: 1;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+button {
+    box-sizing: border-box;
+    height: 4rem;
+    padding: 0;
+    border: 1px solid black;
+    border-radius: 4px;
+    font-size: 2rem;
+    flex: 1 1 23%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #zero {
-    flex: 2;
+    flex-grow: 24;
+}
+
+.setting {
+    background-color: lightgray;
+    color: black;
+}
+
+.number {
+    background-color: gray;
+    color: white;
+}
+
+.operation {
+    background-color: orange;
+    color: white;
+}
+
+.operation {
+    font-size: 2.25rem;
 }
