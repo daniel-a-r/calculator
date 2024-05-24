@@ -97,25 +97,24 @@ const calculator = {
             this.nullOperandB();
             return result;
         }
-    }
-}
-
-const display = {
-    hasDecimal: false,
-    numberCount: 1,
-    startedTyping: false,
-    calculated: false,
-    reset() {
-        this.hasDecimal = false;
-        this.numberCount = 1;
     },
-    format(numberString) {
-        if (!numberString.includes('.')) {
-            if (this.numberCount % 3 === 1) {
-                return numberString[0] + ',' + numberString.slice(1);
+    display: {
+        hasDecimal: false,
+        numberCount: 1,
+        startedTyping: false,
+        calculated: false,
+        reset() {
+            this.hasDecimal = false;
+            this.numberCount = 1;
+        },
+        format(numberString) {
+            if (!numberString.includes('.')) {
+                if (this.numberCount % 3 === 1) {
+                    return numberString[0] + ',' + numberString.slice(1);
+                }
             }
-        }
-    },
+        },
+    }
 }
 
 const para = document.querySelector('p');
@@ -126,38 +125,38 @@ body.addEventListener('keydown', event => {
     const key = event.key
     const text = para.textContent;
     if (NUMBER_KEYS.has(key)) {
-        if (!display.startedTyping && 
+        if (!calculator.display.startedTyping && 
             calculator.operator !== null || 
-            display.calculated) {
+            calculator.display.calculated) {
             if (key !== 'Backspace') {
                 if (key === '.') {
                     para.textContent = '0.';
                 } else {
                     para.textContent = key;
                 }
-                display.numberCount = 1;
-                display.startedTyping = true;
+                calculator.display.numberCount = 1;
+                calculator.display.startedTyping = true;
             }
-            display.calculated = false;
+            calculator.display.calculated = false;
         } else if (key === 'Backspace') {
             if (text.length === 1) {
                 if (text !== '0') {
                     para.textContent = '0';
                 }
             } else {
-                display.numberCount--;
+                calculator.display.numberCount--;
                 para.textContent = text.slice(0, -1);
             }
         } else if (key === '.') {
-            if (!display.hasDecimal) {
-                display.hasDecimal = true;
+            if (!calculator.display.hasDecimal) {
+                calculator.display.hasDecimal = true;
                 para.textContent = text + key;
             }
-        } else if (display.numberCount < 9) {
+        } else if (calculator.display.numberCount < 9) {
             if (text === '0') {
                 para.textContent = key;
             } else {
-                display.numberCount++;
+                calculator.display.numberCount++;
                 para.textContent = text + key;
             }
         }
@@ -179,13 +178,13 @@ body.addEventListener('keydown', event => {
                 if (calculator.operator === null) {
                     calculator.setOperandA(Number(para.textContent));
                     calculator.setOperator(key);
-                } else if (calculator.operator !== null && !display.startedTyping) {
+                } else if (calculator.operator !== null && !calculator.display.startedTyping) {
                     calculator.setOperator(key);
                 } else {
                     calculator.setOperandB(Number(para.textContent));
                     para.textContent = calculator.calculate();
                     calculator.setOperator(key);
-                    display.startedTyping = false;
+                    calculator.display.startedTyping = false;
                 }
                 break;
             case '=':
@@ -193,8 +192,8 @@ body.addEventListener('keydown', event => {
                 calculator.setOperandB(Number(para.textContent))
                 para.textContent = calculator.calculate();
                 calculator.nullOperator();
-                display.startedTyping = false;
-                display.calculated = true;
+                calculator.display.startedTyping = false;
+                calculator.display.calculated = true;
                 break;
         }
     }
