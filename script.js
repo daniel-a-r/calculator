@@ -20,7 +20,7 @@ const KEYS = new Set(['0',
                       '+',
                       '=',
                       'Enter',
-                      'Backspace'])
+                      'Backspace']);
 
 const NUMBER_KEYS = new Set(['0',
                              '1',
@@ -33,14 +33,25 @@ const NUMBER_KEYS = new Set(['0',
                              '8',
                              '9',
                              '.',
-                             'Backspace'])
+                             'Backspace']);
+
+const NUM_KEYS = new Set(['0',
+                             '1',
+                             '2',
+                             '3',
+                             '4',
+                             '5',
+                             '6',
+                             '7',
+                             '8',
+                             '9',]);
 
 const OP_KEYS = new Set(['/',
                          '*',
                          '-',
                          '+',
                          '=',
-                         'Enter',])
+                         'Enter',]);
 
 const calculator = {
     operandA: null,
@@ -117,6 +128,12 @@ const calculator = {
         getHasDecimal() {
             return this.hasDecimal;
         },
+        negateStartedTyping() {
+            return this.startedTyping ? false : true;
+        },
+        resetNumberCount() {
+            this.numberCount = 1;
+        },
         reset() {
             this.hasDecimal = false;
             this.numberCount = 1;
@@ -139,6 +156,45 @@ body.addEventListener('keydown', event => {
     const key = event.key
     const text = para.textContent;
     if (NUMBER_KEYS.has(key)) {
+        // TODO: organize display logic
+        // if (calculator.display.startedTyping) {
+        //     if (key === 'Backspace') {
+
+        //     }
+        // } else {
+        //     if (key !== 'Backspace') {
+        //         if (key === '.') {
+        //             para.textContent = '0.';
+        //         } else {
+        //             para.textContent = key;
+        //         }
+        //         calculator.display.negateStartedTyping();
+        //     }
+        // }
+
+
+        // switch (key) {
+        //     case 'Backspace':
+        //         if (text.length === 1) {
+        //             if (text !== '0') {
+        //                 para.textContent = '0';
+        //             }
+        //         } else {
+        //             calculator.display.numberCount--;
+        //             para.textContent = text.slice(0, -1);
+        //         }
+        //         break;
+        //     case '.':
+        //         if (!calculator.display.getHasDecimal()) {
+        //             if (calculator.display.startedTyping) {
+
+        //             }
+        //         }
+        //         break;
+        //     default:
+                
+        // }
+
         if (!calculator.display.startedTyping && 
             calculator.operator !== null || 
             calculator.display.calculated) {
