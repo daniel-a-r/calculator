@@ -46,6 +46,7 @@ const calculator = {
     operandA: null,
     operandB: null,
     operator: null,
+    result: null,
     setOperandA(num) {
         this.operandA = num;
     },
@@ -55,31 +56,37 @@ const calculator = {
     setOperator(op) {
         this.operator = op;
     },
+    setResult(num) {
+        this.result = num;
+    },
     nullOperator() {
         this.operator = null;
     },
     nullOperandB() {
         this.operandB = null;
     },
+    nullResult() {
+        this.result = null;
+    },
     reset() {
         this.operandB = null;
         this.operator = null;
     },
     divide() {
-        this.operandA = this.operandA / this.operandB;
-        return this.operandA;
+        this.result = this.operandA / this.operandB;
+        return this.result;
     },
     multiply() {
-        this.operandA = this.operandA * this.operandB;
-        return this.operandA;
+        this.result = this.operandA * this.operandB;
+        return this.result;
     },
     subtract() {
-        this.operandA = this.operandA - this.operandB;
-        return this.operandA;
+        this.result = this.operandA - this.operandB;
+        return this.result;
     },
     add() {
-        this.operandA = this.operandA + this.operandB;
-        return this.operandA;
+        this.result = this.operandA + this.operandB;
+        return this.result;
     },
     calculate() {
         if (!(this.operator === null && this.operandB === null)) {
@@ -87,12 +94,16 @@ const calculator = {
             switch (this.operator) {
                 case '/':
                     result = this.divide();
+                    break;
                 case '*':
                     result = this.multiply();
+                    break;
                 case '-':
                     result = this.subtract();
+                    break;
                 case '+':
                     result = this.add();
+                    break;
             }
             this.nullOperandB();
             return result;
@@ -103,6 +114,9 @@ const calculator = {
         numberCount: 1,
         startedTyping: false,
         calculated: false,
+        getHasDecimal() {
+            return this.hasDecimal;
+        },
         reset() {
             this.hasDecimal = false;
             this.numberCount = 1;
