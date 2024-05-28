@@ -1,27 +1,3 @@
-const BUTTON_CODES = {
-    0: 'ac',
-    1: 'sign',
-}
-
-const KEYS = new Set(['0',
-                      '1',
-                      '2',
-                      '3',
-                      '4',
-                      '5',
-                      '6',
-                      '7',
-                      '8',
-                      '9',
-                      '.',
-                      '/',
-                      '*',
-                      '-',
-                      '+',
-                      '=',
-                      'Enter',
-                      'Backspace']);
-
 const NUMBER_KEYS = new Set(['0',
                              '1',
                              '2',
@@ -35,17 +11,6 @@ const NUMBER_KEYS = new Set(['0',
                              '.',
                              'Backspace']);
 
-const NUM_KEYS = new Set(['0',
-                             '1',
-                             '2',
-                             '3',
-                             '4',
-                             '5',
-                             '6',
-                             '7',
-                             '8',
-                             '9',]);
-
 const OP_KEYS = new Set(['/',
                          '*',
                          '-',
@@ -53,35 +18,13 @@ const OP_KEYS = new Set(['/',
                          '=',
                          'Enter',]);
 
+const BUTTON_CODES = new Set(['clear', 'sign'])
+
 const calculator = {
     operandA: null,
     operandB: null,
     operator: null,
     result: null,
-    setOperandA(num) {
-        this.operandA = num;
-    },
-    setOperandB(num) {
-        this.operandB = num;
-    },
-    setOperator(op) {
-        this.operator = op;
-    },
-    setResult(num) {
-        this.result = num;
-    },
-    nullOperator() {
-        this.operator = null;
-    },
-    nullOperandA() {
-        this.operandA = null;
-    },
-    nullOperandB() {
-        this.operandB = null;
-    },
-    nullResult() {
-        this.result = null;
-    },
     reset() {
         this.operandA = null;
         this.operandB = null;
@@ -159,22 +102,31 @@ const calculator = {
         startedTyping: false,
         calculated: false,
         text: '0',
+        altText: '',
         setText(text) { this.text = text; },
         getText() { return this.text; },
-        getHasDecimal() { return this.hasDecimal; },
         setStartedTyping(bool) { this.startedTyping = bool; },
         getStartedTyping() { return this.startedTyping; },
-        negateStartedTyping() { return !this.startedTyping; },
-        resetNumberCount() { this.numberCount = 1; },
-        // reset() {
-        //     this.hasDecimal = false;
-        //     this.numberCount = 1;
-        // },
         format(numberString) {
+            if (this.text.length > 9) {
+                this.altText = Number.parseFloat(numberString).toExponential(0);
+            }
             if (!numberString.includes('.')) {
                 if (this.numberCount % 3 === 1) {
                     return numberString[0] + ',' + numberString.slice(1);
                 }
+            }
+        },
+        inputSetting(input) {
+            if (input === 'clear') {
+                this.text = '0';
+                this.numberCount = 1;
+                this.hasDecimal = false;
+                calculator.reset();
+                para.textContent = this.text;
+            } else {
+                this.text = `${Number(this.text) * -1}`
+                para.textContent = this.text;
             }
         },
         input(input) {
@@ -258,6 +210,16 @@ const buttons = document.querySelectorAll('button');
 buttons.forEach(button => {
     console.log(button);
     button.addEventListener('click', () => {
-        console.log(button);
+        console.log(button.dataset.key);
+        const key = button.dataset.key
+        if (NUMBER_KEYS.has(key)) {
+            para.textContent = calculator.display.input(key);
+        }
+        if (OP_KEYS.has(key)) {
+            calculator.inputOperation(key);
+        }
+        if (BUTTON_CODES.has(key)) {
+            calculator.display.inputSetting(key);
+        }
     });
 });
