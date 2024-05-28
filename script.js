@@ -73,6 +73,9 @@ const calculator = {
     nullOperator() {
         this.operator = null;
     },
+    nullOperandA() {
+        this.operandA = null;
+    },
     nullOperandB() {
         this.operandB = null;
     },
@@ -125,11 +128,13 @@ const calculator = {
         numberCount: 1,
         startedTyping: false,
         calculated: false,
+        text: '0',
+        getText() { return this.text; },
         getHasDecimal() {
             return this.hasDecimal;
         },
         negateStartedTyping() {
-            return this.startedTyping ? false : true;
+            return !this.startedTyping;
         },
         resetNumberCount() {
             this.numberCount = 1;
@@ -145,10 +150,62 @@ const calculator = {
                 }
             }
         },
+        input(input) {
+            switch (input) {
+                case '0':
+                    this.inputZero(input);
+                    break;
+                case '.':
+                    this.inputDecimal(input);
+                    break;
+                case 'Backspace':
+                    this.inputBackspace();
+                    break;
+                default:
+                    this.inputNum(input);
+            }
+            return this.text;
+        },
+        inputZero(input) {
+            if (this.text !== '0') {
+                if (this.numberCount < 9) {
+                    this.text = this.text + input;
+                    this.numberCount++;
+                }
+            }
+        },
+        inputNum(input) {
+            if (this.text !== '0') {
+                if (this.numberCount < 9) {
+                    this.text = this.text + input;
+                    this.numberCount++;
+                }
+            } else {
+                this.text = input;
+            }
+        },
+        inputDecimal(input) {
+            if (!this.hasDecimal) {
+                this.text = this.text + input;
+                this.hasDecimal = true;
+            }
+        },
+        inputBackspace() {
+            if (this.text.at(-1) === '.') {
+                this.text = this.text.slice(0, -1);
+                this.hasDecimal = false;
+            } else if (this.numberCount > 1) {
+                this.text = this.text.slice(0, -1);
+                this.numberCount--;
+            } else if (this.numberCount === 1 && this.text !== '0') {
+                this.text = '0'
+            }
+        }
     }
 }
 
 const para = document.querySelector('p');
+para.textContent = calculator.display.getText();
 console.log(para.textContent);
 
 const body = document.querySelector('body');
@@ -156,87 +213,15 @@ body.addEventListener('keydown', event => {
     const key = event.key
     const text = para.textContent;
     if (NUMBER_KEYS.has(key)) {
-        // TODO: organize display logic
-        // if (calculator.display.startedTyping) {
-        //     if (key === 'Backspace') {
-
-        //     }
-        // } else {
-        //     if (key !== 'Backspace') {
-        //         if (key === '.') {
-        //             para.textContent = '0.';
-        //         } else {
-        //             para.textContent = key;
-        //         }
-        //         calculator.display.negateStartedTyping();
-        //     }
-        // }
-
-
-        // switch (key) {
-        //     case 'Backspace':
-        //         if (text.length === 1) {
-        //             if (text !== '0') {
-        //                 para.textContent = '0';
-        //             }
-        //         } else {
-        //             calculator.display.numberCount--;
-        //             para.textContent = text.slice(0, -1);
-        //         }
-        //         break;
-        //     case '.':
-        //         if (!calculator.display.getHasDecimal()) {
-        //             if (calculator.display.startedTyping) {
-
-        //             }
-        //         }
-        //         break;
-        //     default:
-                
-        // }
-
-        if (!calculator.display.startedTyping && 
-            calculator.operator !== null || 
-            calculator.display.calculated) {
-            if (key !== 'Backspace') {
-                if (key === '.') {
-                    para.textContent = '0.';
-                } else {
-                    para.textContent = key;
-                }
-                calculator.display.numberCount = 1;
-                calculator.display.startedTyping = true;
-            }
-            calculator.display.calculated = false;
-        } else if (key === 'Backspace') {
-            if (text.length === 1) {
-                if (text !== '0') {
-                    para.textContent = '0';
-                }
-            } else {
-                calculator.display.numberCount--;
-                para.textContent = text.slice(0, -1);
-            }
-        } else if (key === '.') {
-            if (!calculator.display.hasDecimal) {
-                calculator.display.hasDecimal = true;
-                para.textContent = text + key;
-            }
-        } else if (calculator.display.numberCount < 9) {
-            if (text === '0') {
-                para.textContent = key;
-            } else {
-                calculator.display.numberCount++;
-                para.textContent = text + key;
-            }
-        }
+        para.textContent = calculator.display.input(key);
     }
+
     if (OP_KEYS.has(key)) {
-        // if (key === '/' || 
-        //     key === '*' || 
-        //     key === '-' || 
+        // if (key === '/' ||
+        //     key === '*' ||
+        //     key === '-' ||
         //     key === '+') {
-                
+
         // } else {
 
         // }
@@ -275,4 +260,4 @@ buttons.forEach(button => {
     button.addEventListener('click', () => {
         console.log(button);
     });
-})
+});
