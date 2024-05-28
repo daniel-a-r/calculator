@@ -83,44 +83,74 @@ const calculator = {
         this.result = null;
     },
     reset() {
+        this.operandA = null;
         this.operandB = null;
         this.operator = null;
+        this.result = null;
     },
     divide() {
         this.result = this.operandA / this.operandB;
-        return this.result;
     },
     multiply() {
         this.result = this.operandA * this.operandB;
-        return this.result;
     },
     subtract() {
         this.result = this.operandA - this.operandB;
-        return this.result;
     },
     add() {
         this.result = this.operandA + this.operandB;
-        return this.result;
     },
     calculate() {
         if (!(this.operator === null && this.operandB === null)) {
-            let result;
             switch (this.operator) {
                 case '/':
-                    result = this.divide();
+                    this.divide();
                     break;
                 case '*':
-                    result = this.multiply();
+                    this.multiply();
                     break;
                 case '-':
-                    result = this.subtract();
+                    this.subtract();
                     break;
                 case '+':
-                    result = this.add();
+                    this.add();
                     break;
             }
-            this.nullOperandB();
-            return result;
+        }
+    },
+    inputOperation(op) {
+        if (op === '=' || op === 'Enter') {
+            if (this.operandA !== null && this.display.getStartedTyping()) {
+                this.operandB = Number(this.display.getText());
+                this.calculate();
+                this.display.setText(this.result);
+                para.textContent = this.display.getText()
+                this.display.setStartedTyping(false);
+            }
+        } else {
+            if (this.result !== null && !this.display.getStartedTyping()) {
+                this.operandA = this.result;
+                this.operator = op;
+                this.operandB = null;
+                this.result = null;
+                this.display.setStartedTyping(false);
+            } else if (this.operator !== null && this.display.getStartedTyping()) {
+                this.operandB = Number(this.display.getText());
+                this.calculate();
+                this.display.setText(this.result);
+                para.textContent = this.display.getText()
+                this.operandA = this.result;
+                this.operator = op;
+                this.operandB = null;
+                this.result = null;
+                this.display.setStartedTyping(false);
+            } else if (this.operator === null) {
+                this.operandA = Number(this.display.getText());
+                this.operator = op;
+                this.display.setStartedTyping(false);
+            } else if (!this.display.getStartedTyping()) {
+                this.operator = op;
+            }
         }
     },
     display: {
@@ -129,20 +159,17 @@ const calculator = {
         startedTyping: false,
         calculated: false,
         text: '0',
+        setText(text) { this.text = text; },
         getText() { return this.text; },
-        getHasDecimal() {
-            return this.hasDecimal;
-        },
-        negateStartedTyping() {
-            return !this.startedTyping;
-        },
-        resetNumberCount() {
-            this.numberCount = 1;
-        },
-        reset() {
-            this.hasDecimal = false;
-            this.numberCount = 1;
-        },
+        getHasDecimal() { return this.hasDecimal; },
+        setStartedTyping(bool) { this.startedTyping = bool; },
+        getStartedTyping() { return this.startedTyping; },
+        negateStartedTyping() { return !this.startedTyping; },
+        resetNumberCount() { this.numberCount = 1; },
+        // reset() {
+        //     this.hasDecimal = false;
+        //     this.numberCount = 1;
+        // },
         format(numberString) {
             if (!numberString.includes('.')) {
                 if (this.numberCount % 3 === 1) {
@@ -151,6 +178,14 @@ const calculator = {
             }
         },
         input(input) {
+            if (!this.startedTyping) {
+                this.text = '0';
+                this.numberCount = 1;
+                this.startedTyping = true;
+            }
+            if (calculator.result !== null) {
+                calculator.reset();
+            }
             switch (input) {
                 case '0':
                     this.inputZero(input);
@@ -211,46 +246,11 @@ console.log(para.textContent);
 const body = document.querySelector('body');
 body.addEventListener('keydown', event => {
     const key = event.key
-    const text = para.textContent;
     if (NUMBER_KEYS.has(key)) {
         para.textContent = calculator.display.input(key);
     }
-
     if (OP_KEYS.has(key)) {
-        // if (key === '/' ||
-        //     key === '*' ||
-        //     key === '-' ||
-        //     key === '+') {
-
-        // } else {
-
-        // }
-        switch (key) {
-            case '/':
-            case '*':
-            case '-':
-            case '+':
-                if (calculator.operator === null) {
-                    calculator.setOperandA(Number(para.textContent));
-                    calculator.setOperator(key);
-                } else if (calculator.operator !== null && !calculator.display.startedTyping) {
-                    calculator.setOperator(key);
-                } else {
-                    calculator.setOperandB(Number(para.textContent));
-                    para.textContent = calculator.calculate();
-                    calculator.setOperator(key);
-                    calculator.display.startedTyping = false;
-                }
-                break;
-            case '=':
-            case 'Enter':
-                calculator.setOperandB(Number(para.textContent))
-                para.textContent = calculator.calculate();
-                calculator.nullOperator();
-                calculator.display.startedTyping = false;
-                calculator.display.calculated = true;
-                break;
-        }
+        calculator.inputOperation(key);
     }
 });
 
