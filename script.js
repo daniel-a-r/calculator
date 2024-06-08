@@ -138,6 +138,7 @@ const calculator= {
             if (!this.startedTyping) {
                 this.text = '0';
                 this.numberCount = 1;
+                this.hasDecimal = false;
                 this.startedTyping = true;
             }
             if (calculator.result !== null) {
@@ -211,10 +212,10 @@ body.addEventListener('keydown', event => {
         para.textContent = calculator.display.input(key);
     }
     if (OP_KEYS.has(key)) {
+        calculator.inputOperation(key);
         if (key === '/') {
             event.preventDefault();
         }
-        calculator.inputOperation(key);
     }
 });
 
