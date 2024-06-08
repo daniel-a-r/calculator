@@ -174,7 +174,6 @@ const calculator= {
                 }
             } else {
                 this.setText(input);
-                // this.text = input;
             }
         },
         inputDecimal(input) {
@@ -199,24 +198,29 @@ const calculator= {
 
 const para = document.querySelector('p');
 para.textContent = calculator.display.getText();
-console.log(para.textContent);
 
 const body = document.querySelector('body');
+
+body.addEventListener('dblclick', event => {
+    event.preventDefault();
+});
+
 body.addEventListener('keydown', event => {
     const key = event.key
     if (NUMBER_KEYS.has(key)) {
         para.textContent = calculator.display.input(key);
     }
     if (OP_KEYS.has(key)) {
+        if (key === '/') {
+            event.preventDefault();
+        }
         calculator.inputOperation(key);
     }
 });
 
 const buttons = document.querySelectorAll('button');
 buttons.forEach(button => {
-    console.log(button);
     button.addEventListener('click', () => {
-        console.log(button.dataset.key);
         const key = button.dataset.key
         if (NUMBER_KEYS.has(key)) {
             para.textContent = calculator.display.input(key);
