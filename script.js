@@ -20,7 +20,7 @@ const OP_KEYS = new Set(['/',
 
 const BUTTON_CODES = new Set(['clear', 'sign'])
 
-const calculator = {
+const calculator= {
     operandA: null,
     operandB: null,
     operator: null,
@@ -66,7 +66,7 @@ const calculator = {
             if (this.operandA !== null && this.display.getStartedTyping()) {
                 this.operandB = Number(this.display.getText());
                 this.calculate();
-                this.display.setText(this.result);
+                this.display.setText(this.result, true);
                 para.textContent = this.display.getText()
                 this.display.setStartedTyping(false);
             }
@@ -80,7 +80,7 @@ const calculator = {
             } else if (this.operator !== null && this.display.getStartedTyping()) {
                 this.operandB = Number(this.display.getText());
                 this.calculate();
-                this.display.setText(this.result);
+                this.display.setText(this.result, true);
                 para.textContent = this.display.getText()
                 this.operandA = this.result;
                 this.operator = op;
@@ -103,19 +103,24 @@ const calculator = {
         calculated: false,
         text: '0',
         altText: '',
-        setText(text) { this.text = text; },
+        setText(text, setNumberCount=false) {
+            if (setNumberCount) {
+                let numCount = text.toString().length;
+                if (!Number.isInteger(parseFloat(text))) {
+                    numCount--;
+                }
+                this.numberCount = numCount;
+            }
+            this.text = this.format(text);
+        },
         getText() { return this.text; },
         setStartedTyping(bool) { this.startedTyping = bool; },
         getStartedTyping() { return this.startedTyping; },
         format(numberString) {
-            if (this.text.length > 9) {
-                this.altText = Number.parseFloat(numberString).toExponential(0);
+            if (this.numberCount > 9) {
+                return Number.parseFloat(numberString).toExponential(1);
             }
-            if (!numberString.includes('.')) {
-                if (this.numberCount % 3 === 1) {
-                    return numberString[0] + ',' + numberString.slice(1);
-                }
-            }
+            return numberString;
         },
         inputSetting(input) {
             if (input === 'clear') {
@@ -156,7 +161,7 @@ const calculator = {
         inputZero(input) {
             if (this.text !== '0') {
                 if (this.numberCount < 9) {
-                    this.text = this.text + input;
+                    this.setText(this.text + input);
                     this.numberCount++;
                 }
             }
@@ -164,16 +169,17 @@ const calculator = {
         inputNum(input) {
             if (this.text !== '0') {
                 if (this.numberCount < 9) {
-                    this.text = this.text + input;
+                    this.setText(this.text + input);
                     this.numberCount++;
                 }
             } else {
-                this.text = input;
+                this.setText(input);
+                // this.text = input;
             }
         },
         inputDecimal(input) {
             if (!this.hasDecimal) {
-                this.text = this.text + input;
+                this.setText(this.text + input);
                 this.hasDecimal = true;
             }
         },
