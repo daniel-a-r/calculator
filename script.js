@@ -70,6 +70,7 @@ const calculator = {
                 this.display.setText(this.result, true);
                 para.textContent = this.display.getText()
                 this.display.setStartedTyping(false);
+                this.buttons.resetOpButtonColor();
             }
         } else {
             if (this.result !== null && !this.display.getStartedTyping()) {
@@ -196,22 +197,24 @@ const calculator = {
             }
         }
     },
+    // TODO: add transition to non-operator buttons.
     buttons: {
         highlightedOperation: null,
         resetOpButtonColor() {
-            if (this.highlightedOperation !== null) {
-                // uses optional chaining to check if 'operation-alt' class exists and remove it if it does.
-                document.querySelector('.operation-alt')?.classList.remove('operation-alt');
-                this.highlightedOperation = null;
-            }
+            // uses optional chaining to check if 'operation-alt' class exists and remove it if it does.
+            document.querySelector('.operation-alt')?.classList.remove('operation-alt');
         },
         updateButtonColor(button) {
-            const classNameAlt = 'operation-alt';
+            const baseClass = button.classList[0];
+            const altClass = `${baseClass}-alt`;
             if (button.className === 'operation' && button.id !== 'equals') {
                 this.resetOpButtonColor();
-                button.classList.add(classNameAlt);
-                this.highlightedOperation = button.id;
-                console.log(this.highlightedOperation);
+                button.classList.add(altClass);
+            } else {
+                button.classList.add(altClass);
+                setTimeout(() => {
+                    button.classList.remove(altClass);
+                }, 100);
             }
         }
     }

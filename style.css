@@ -15,7 +15,7 @@ body {
     border: 1px solid black;
     border-radius: 4px;
     padding: .5rem;
-    background-color: rgb(64, 64, 64);
+    background-color: rgb(48, 48, 48);
 }
 
 .output {
@@ -62,13 +62,21 @@ button {
 }
 
 .setting {
+    background-color: darkgray;
+    color: white;
+}
+
+.setting-alt {
     background-color: lightgray;
-    color: black;
 }
 
 .number {
-    background-color: gray;
+    background-color: dimgray;
     color: white;
+}
+
+.number-alt {
+    background-color: darkgray;
 }
 
 .operation {
