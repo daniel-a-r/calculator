@@ -76,6 +76,11 @@ button {
     color: white;
 }
 
+.operation-alt {
+    background-color: white;
+    color: orange;
+}
+
 .operation {
     font-size: 2.25rem;
 }

@@ -20,7 +20,7 @@ const OP_KEYS = new Set(['/',
 
 const BUTTON_CODES = new Set(['clear', 'sign'])
 
-const calculator= {
+const calculator = {
     operandA: null,
     operandB: null,
     operator: null,
@@ -30,6 +30,7 @@ const calculator= {
         this.operandB = null;
         this.operator = null;
         this.result = null;
+        this.buttons.resetOpButtonColor();
     },
     divide() {
         this.result = this.operandA / this.operandB;
@@ -194,6 +195,25 @@ const calculator= {
                 this.text = '0'
             }
         }
+    },
+    buttons: {
+        highlightedOperation: null,
+        resetOpButtonColor() {
+            if (this.highlightedOperation !== null) {
+                // uses optional chaining to check if 'operation-alt' class exists and remove it if it does.
+                document.querySelector('.operation-alt')?.classList.remove('operation-alt');
+                this.highlightedOperation = null;
+            }
+        },
+        updateButtonColor(button) {
+            const classNameAlt = 'operation-alt';
+            if (button.className === 'operation' && button.id !== 'equals') {
+                this.resetOpButtonColor();
+                button.classList.add(classNameAlt);
+                this.highlightedOperation = button.id;
+                console.log(this.highlightedOperation);
+            }
+        }
     }
 }
 
@@ -232,5 +252,6 @@ buttons.forEach(button => {
         if (BUTTON_CODES.has(key)) {
             calculator.display.inputSetting(key);
         }
+        calculator.buttons.updateButtonColor(button);
     });
 });
