@@ -18,7 +18,28 @@ const OP_KEYS = new Set(['/',
                          '=',
                          'Enter',]);
 
-const BUTTON_CODES = new Set(['clear', 'sign'])
+const BUTTON_CODES = new Set(['clear', 'sign']);
+
+const KEY_ID_MAP = {
+    '0': 'zero',
+    '1': 'one',
+    '2': 'two',
+    '3': 'three',
+    '4': 'four',
+    '5': 'five',
+    '6': 'six',
+    '7': 'seven',
+    '8': 'eight',
+    '9': 'nine',
+    '.': 'decimal',
+    'Backspace': 'del',
+    '/': 'divide',
+    '*': 'times',
+    '-': 'minus',
+    '+': 'plus',
+    '=': 'equals',
+    'Enter': 'equals'
+};
 
 const calculator = {
     operandA: null,
@@ -218,7 +239,7 @@ const calculator = {
             }
         }
     }
-}
+};
 
 const para = document.querySelector('p');
 para.textContent = calculator.display.getText();
@@ -239,6 +260,11 @@ body.addEventListener('keydown', event => {
         if (key === '/') {
             event.preventDefault();
         }
+    }
+    if (KEY_ID_MAP[key] !== undefined) {
+        const button = document.getElementById(KEY_ID_MAP[key]);
+        // console.log(button);
+        calculator.buttons.updateButtonColor(button);
     }
 });
 
