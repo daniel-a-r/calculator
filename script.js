@@ -263,7 +263,6 @@ body.addEventListener('keydown', event => {
     }
     if (KEY_ID_MAP[key] !== undefined) {
         const button = document.getElementById(KEY_ID_MAP[key]);
-        // console.log(button);
         calculator.buttons.updateButtonColor(button);
     }
 });
