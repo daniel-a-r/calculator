@@ -15,31 +15,9 @@ const OP_KEYS = new Set(['/',
                          '*',
                          '-',
                          '+',
-                         '=',
-                         'Enter',]);
+                         '=']);
 
 const BUTTON_CODES = new Set(['clear', 'sign']);
-
-const KEY_ID_MAP = {
-    '0': 'zero',
-    '1': 'one',
-    '2': 'two',
-    '3': 'three',
-    '4': 'four',
-    '5': 'five',
-    '6': 'six',
-    '7': 'seven',
-    '8': 'eight',
-    '9': 'nine',
-    '.': 'decimal',
-    'Backspace': 'del',
-    '/': 'divide',
-    '*': 'times',
-    '-': 'minus',
-    '+': 'plus',
-    '=': 'equals',
-    'Enter': 'equals'
-};
 
 const calculator = {
     operandA: null,
@@ -84,7 +62,7 @@ const calculator = {
         }
     },
     inputOperation(op) {
-        if (op === '=' || op === 'Enter') {
+        if (op === '=') {
             if (this.operandA !== null && this.display.getStartedTyping()) {
                 this.operandB = Number(this.display.getText());
                 this.calculate();
@@ -251,7 +229,11 @@ body.addEventListener('dblclick', event => {
 });
 
 body.addEventListener('keydown', event => {
-    const key = event.key
+    let key = event.key
+    // if key is 'Enter, set to '='
+    // else, keep key the same
+    key = key === 'Enter' ? '=' : key;
+
     if (NUMBER_KEYS.has(key)) {
         para.textContent = calculator.display.input(key);
     }
@@ -261,8 +243,9 @@ body.addEventListener('keydown', event => {
             event.preventDefault();
         }
     }
-    if (KEY_ID_MAP[key] !== undefined) {
-        const button = document.getElementById(KEY_ID_MAP[key]);
+    
+    const button = document.querySelector(`[data-key='${key}']`);
+    if (button !== undefined) {
         calculator.buttons.updateButtonColor(button);
     }
 });
