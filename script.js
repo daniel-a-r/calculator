@@ -210,7 +210,7 @@ const calculator = {
             if (button.className === 'operation' && button.id !== 'equals') {
                 this.resetOpButtonColor();
                 button.classList.add(altClass);
-            } else {
+            } else if (!button.className.includes('-alt')) {
                 button.classList.add(altClass);
                 setTimeout(() => {
                     button.classList.remove(altClass);
