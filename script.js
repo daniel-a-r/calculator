@@ -203,14 +203,9 @@ const calculator = {
         },
         inputBackspace() {
             if (this.text.at(-1) === '.') {
-                // this.text = this.text.slice(0, -1);
                 this.hasDecimal = false;
                 this.setText(this.text.slice(0, -1))
             } else if (this.numberCount > 1) {
-                // this.text = this.text.slice(0, -1);
-                // if (!this.hasDecimal) {
-                //     parseFloat(this.text.replace(/,/g, '')).toLocaleString('en-US');
-                // }
                 this.numberCount--;
                 this.setText(this.text.slice(0, -1))
             } else if (this.numberCount === 1 && this.text !== '0') {
@@ -226,6 +221,7 @@ const calculator = {
             document.querySelector('.operation-alt')?.classList.remove('operation-alt');
         },
         updateButtonColor(button) {
+            // makes sure button is not undefined or null
             if (button) {
                 const baseClass = button.classList[0];
                 const altClass = `${baseClass}-alt`;
