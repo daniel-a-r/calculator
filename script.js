@@ -64,9 +64,9 @@ const calculator = {
     inputOperation(op) {
         if (op === '=') {
             if (this.operandA !== null && this.display.getStartedTyping()) {
-                this.operandB = Number(this.display.getText());
+                this.operandB = parseFloat(this.display.getText().replaceAll(',', ''));
                 this.calculate();
-                this.display.setText(this.result, true);
+                this.display.setText(String(this.result), true);
                 para.textContent = this.display.getText()
                 this.display.setStartedTyping(false);
                 this.buttons.resetOpButtonColor();
@@ -79,9 +79,9 @@ const calculator = {
                 this.result = null;
                 this.display.setStartedTyping(false);
             } else if (this.operator !== null && this.display.getStartedTyping()) {
-                this.operandB = Number(this.display.getText());
+                this.operandB = parseFloat(this.display.getText().replaceAll(',', ''));
                 this.calculate();
-                this.display.setText(this.result, true);
+                this.display.setText(String(this.result), true);
                 para.textContent = this.display.getText()
                 this.operandA = this.result;
                 this.operator = op;
@@ -89,7 +89,7 @@ const calculator = {
                 this.result = null;
                 this.display.setStartedTyping(false);
             } else if (this.operator === null) {
-                this.operandA = Number(this.display.getText());
+                this.operandA = parseFloat(this.display.getText().replaceAll(',', ''));
                 this.operator = op;
                 this.display.setStartedTyping(false);
             } else if (!this.display.getStartedTyping()) {
@@ -106,7 +106,7 @@ const calculator = {
         altText: '',
         setText(text, setNumberCount=false) {
             if (setNumberCount) {
-                let numCount = text.toString().length;
+                let numCount = text.length;
                 if (!Number.isInteger(parseFloat(text))) {
                     numCount--;
                 }
@@ -118,10 +118,19 @@ const calculator = {
         setStartedTyping(bool) { this.startedTyping = bool; },
         getStartedTyping() { return this.startedTyping; },
         format(numberString) {
+            let formattedString;
             if (this.numberCount > 9) {
-                return Number.parseFloat(numberString).toExponential(1);
+                formattedString = Number.parseFloat(numberString).toExponential(1);
+            } else if (this.hasDecimal) {
+                const decimalIndx = numberString.indexOf('.');
+                const integerPart = numberString.slice(0, decimalIndx);
+                const fractionalPart = numberString.slice(decimalIndx);
+                formattedString = parseFloat(integerPart.replaceAll(',', '')).toLocaleString('en-US') + fractionalPart;
+            } 
+            else {
+                formattedString = parseFloat(numberString.replaceAll(',', '')).toLocaleString('en-US');
             }
-            return numberString;
+            return formattedString;
         },
         inputSetting(input) {
             if (input === 'clear') {
@@ -131,7 +140,7 @@ const calculator = {
                 calculator.reset();
                 para.textContent = this.text;
             } else {
-                this.text = `${Number(this.text) * -1}`
+                this.setText(`${parseFloat(this.text.replaceAll(',', '')) * -1}`)
                 para.textContent = this.text;
             }
         },
@@ -163,7 +172,8 @@ const calculator = {
         inputZero(input) {
             if (this.text !== '0') {
                 if (this.numberCount < 9) {
-                    this.setText(this.text + input);
+                    const parsed = this.parseCommasDecimals(this.text);
+                    this.setText(parsed + input);
                     this.numberCount++;
                 }
             }
@@ -171,7 +181,8 @@ const calculator = {
         inputNum(input) {
             if (this.text !== '0') {
                 if (this.numberCount < 9) {
-                    this.setText(this.text + input);
+                    const parsed = this.parseCommasDecimals(this.text);
+                    this.setText(parsed + input);
                     this.numberCount++;
                 }
             } else {
@@ -180,17 +191,28 @@ const calculator = {
         },
         inputDecimal(input) {
             if (!this.hasDecimal) {
-                this.setText(this.text + input);
                 this.hasDecimal = true;
+                this.setText(this.text + input);
             }
+        },
+        parseCommasDecimals(numString) {
+            if (numString.at(-1) === '.') {
+                return parseFloat(numString.replaceAll(',', '')) + '.';
+            } 
+            return String(parseFloat(numString.replaceAll(',', '')));
         },
         inputBackspace() {
             if (this.text.at(-1) === '.') {
-                this.text = this.text.slice(0, -1);
+                // this.text = this.text.slice(0, -1);
                 this.hasDecimal = false;
+                this.setText(this.text.slice(0, -1))
             } else if (this.numberCount > 1) {
-                this.text = this.text.slice(0, -1);
+                // this.text = this.text.slice(0, -1);
+                // if (!this.hasDecimal) {
+                //     parseFloat(this.text.replace(/,/g, '')).toLocaleString('en-US');
+                // }
                 this.numberCount--;
+                this.setText(this.text.slice(0, -1))
             } else if (this.numberCount === 1 && this.text !== '0') {
                 this.text = '0'
             }
@@ -204,16 +226,18 @@ const calculator = {
             document.querySelector('.operation-alt')?.classList.remove('operation-alt');
         },
         updateButtonColor(button) {
-            const baseClass = button.classList[0];
-            const altClass = `${baseClass}-alt`;
-            if (button.className === 'operation' && button.id !== 'equals') {
-                this.resetOpButtonColor();
-                button.classList.add(altClass);
-            } else if (!button.className.includes('-alt')) {
-                button.classList.add(altClass);
-                setTimeout(() => {
-                    button.classList.remove(altClass);
-                }, 100);
+            if (button) {
+                const baseClass = button.classList[0];
+                const altClass = `${baseClass}-alt`;
+                if (button.className === 'operation' && button.id !== 'equals') {
+                    this.resetOpButtonColor();
+                    button.classList.add(altClass);
+                } else if (!button.className.includes('-alt')) {
+                    button.classList.add(altClass);
+                    setTimeout(() => {
+                        button.classList.remove(altClass);
+                    }, 100);
+                }
             }
         }
     }
